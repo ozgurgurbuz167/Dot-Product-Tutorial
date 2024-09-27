@@ -13,7 +13,7 @@ namespace OzgurGurbuz
 	
 	Features:
 	- Two spheres that move back and forth.
-    - Two spheres that rotate 180 degrees.
+	- Two spheres that rotate 180 degrees.
 	- Two text displays showing the results based on the dot product.
 	
 	Enjoy exploring the concept of dot products in 3D space!
@@ -21,7 +21,7 @@ namespace OzgurGurbuz
 	*/
 	
 	public class DotProductTutorial : MonoBehaviour
-	{	
+	{
 		[SerializeField][Range(1, 2)]private float speed = 1f; // Speed of the objects
 		[SerializeField][Range(-1, 1)]private float firstDotProduct; // Result of the first dot product calculation
 		[SerializeField][Range(-1, 1)]private float secondDotProduct; // Result of the second dot product calculation
@@ -31,17 +31,14 @@ namespace OzgurGurbuz
 		private GameObject firstExample, objectA, objectB;
 		private TextMesh objectAText, objectBText, firstResultText;
 		private float moveDistance = 0.5f;
-		private float currentDistanceA = 0f;
-		private float currentDistanceB = 0f;
-		private bool movingA = true;
-		private bool movingB = true;
+		private float currentDistanceA = 0f, currentDistanceB = 0f;
+		private bool movingA = true, movingB = true;
 		
 		private GameObject secondExample, objectX, objectY;
 		private TextMesh objectXText, objectYText, secondResultText;
-		private float objectXTargetAngle = 90f;
-		private float objectYTargetAngle = 90f;
+		private float objectXTargetAngle = 90f, objectYTargetAngle = 90f;
 		private bool isObjectYWaiting = false;
-	
+		
 		private void Awake()
 		{
 			// The main parent object
@@ -55,20 +52,12 @@ namespace OzgurGurbuz
 			firstExample.transform.localPosition = new Vector3(0, 0, 1.75f);
 			
 			// Create Object A
-			objectA = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			objectA.transform.SetParent(firstExample.transform);
-			objectA.transform.localPosition = new Vector3(-2, 0, 0);
-			objectA.GetComponent<Renderer>().material.color = Color.red;		
-			CreateText(out objectAText, "A", objectA.transform, new Vector3(0, 1.5f, 0));
-			CreateForwardAxis(objectA.transform);
+			objectA = CreateGameObject(firstExample.transform, PrimitiveType.Sphere, new Vector3(-2, 0, 0), Color.red);
+			CreateText(out objectAText, "A", objectA.transform, new Vector3(0, 1.5f, 0));		
 			
 			// Create Object B
-			objectB = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			objectB.transform.SetParent(firstExample.transform);
-			objectB.transform.localPosition = new Vector3(2, 0, 0);
-			objectB.GetComponent<Renderer>().material.color = Color.blue;		
+			objectB = CreateGameObject(firstExample.transform, PrimitiveType.Sphere, new Vector3(2, 0, 0), Color.blue);	
 			CreateText(out objectBText, "B", objectB.transform, new Vector3(0, 1.5f, 0));
-			CreateForwardAxis(objectB.transform);
 			
 			// Create result text for the first example
 			CreateResultText(out firstResultText, "First Result", firstExample.transform, new Vector3(-4.75f, 3.5f, 2.5f));
@@ -81,25 +70,18 @@ namespace OzgurGurbuz
 			secondExample.transform.localPosition = new Vector3(0, 0, -1.75f);
 			
 			// Create Object X
-			objectX = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			objectX.transform.SetParent(secondExample.transform);
-			objectX.transform.localPosition = new Vector3(-2, 0, 0);
-			objectX.GetComponent<Renderer>().material.color = Color.green;
+			objectX =  CreateGameObject(secondExample.transform, PrimitiveType.Sphere, new Vector3(-2, 0, 0), Color.green);
 			CreateText(out objectXText, "X", objectX.transform, new Vector3(0, 1.5f, 0));
-			CreateForwardAxis(objectX.transform);
 			
 			// Create Object Y
-			objectY = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			objectY.transform.SetParent(secondExample.transform);
-			objectY.transform.localPosition = new Vector3(2, 0, 0);
-			objectY.GetComponent<Renderer>().material.color = Color.yellow;
+			objectY = CreateGameObject(secondExample.transform, PrimitiveType.Sphere, new Vector3(2, 0, 0), Color.yellow);
 			CreateText(out objectYText, "Y", objectY.transform, new Vector3(0, 1.5f, 0));
-			CreateForwardAxis(objectY.transform);
 			
 			// Create result text for the second example
 			CreateResultText(out secondResultText, "Second Result", secondExample.transform, new Vector3(-4.75f, 3.5f, -2.5f));
 			#endregion
 			
+			#region Create Camera
 			cameraObject = new GameObject("Tutorial Camera");
 			cameraObject.transform.SetParent(gameObject.transform);
 			cameraObject.transform.localPosition = new Vector3(0, 9, 0);
@@ -108,8 +90,9 @@ namespace OzgurGurbuz
 			Camera cameraComponent = cameraObject.AddComponent<Camera>();
 			cameraComponent.orthographic = true;			
 			cameraComponent.orthographicSize = 5f;
+			#endregion
 		}
-
+		
 		private void Update()
 		{
 			#region First Example
@@ -202,6 +185,18 @@ namespace OzgurGurbuz
 			
 			// Perform dot product calculations
 			CalculateDotProduct();
+		}
+		
+		// Helper function to create GameObjects
+		private GameObject CreateGameObject(Transform _parent, PrimitiveType _type, Vector3 _position, Color _color)
+		{
+			GameObject _go = GameObject.CreatePrimitive(_type);
+			_go.transform.SetParent(_parent);
+			_go.transform.localPosition = _position;
+			_go.GetComponent<Renderer>().material.color = _color;
+			CreateForwardAxis(_go.transform);
+			
+			return _go;
 		}
 		
 		// Helper function to create text objects
